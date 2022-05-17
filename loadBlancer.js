@@ -98,7 +98,7 @@ class WorkerNode {
       }
     })
 
-    this.sock.on('error', error => console.error(error))
+    this.sock.on('error', console.error)
 
     this.sock.on('close', () => {  
       // Websockets need to be re-opened after they close.
