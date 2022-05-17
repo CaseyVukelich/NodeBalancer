@@ -13,11 +13,11 @@ Nodebalancer will load balance across these servers.
 ```script
 [
   {
-		"cmd": "server 1",
+    "cmd": "server 1",
     "port": 8001
   },
 	{
-		"cmd": "server 2",
+    "cmd": "server 2",
     "port": 8002
   }
 ]

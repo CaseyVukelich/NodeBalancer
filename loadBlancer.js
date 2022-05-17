@@ -31,19 +31,19 @@ class ManagerNode {
   constructor (conf) {
     this.conf = conf
     this.workers = []
-		this.position = 0 // Position in the round-robin queue.
+    this.position = 0 // Position in the round-robin queue.
 
     this.startServer()
     this.spawnWorkers()
   }
 
-	// Create load balancer server and connect to each server being managed
+  // Create load balancer server and connect to each server being managed
   startServer () {
     this.server = net.createServer(connection => {
       connection.on('data', data => {
         this.workers[this.position++].send(data.toString(), connection)
 
-				if (this.position >= this.totalWorkers) this.position = 0
+        if (this.position >= this.totalWorkers) this.position = 0
       })
     })
 
@@ -55,12 +55,12 @@ class ManagerNode {
       }
     })
 
-		this.server.on('close', () => console.log('closing'))
+    this.server.on('close', () => console.log('closing'))
 
     this.server.listen(8012, () => {})
   }
 
-	// Create a worker for each server being balanced across.
+  // Create a worker for each server being balanced across.
   spawnWorkers () {
     let port = 1337
     this.conf.forEach(proc => {
@@ -71,7 +71,7 @@ class ManagerNode {
       this.workers.push(worker)
     })
 
-		this.totalWorkers = this.workers.length
+    this.totalWorkers = this.workers.length
   }
 }
 
@@ -81,7 +81,7 @@ class WorkerNode {
     Object.assign(this, config)
   }
 
-	// Open socket to server
+  // Open socket to server
   openSockChannel (commPort) {
     // Connect to the server being managed.
     this.sock = net.createConnection(this.port)
@@ -91,27 +91,27 @@ class WorkerNode {
     })
 
     this.sock.on('data', data => {
-			if (this.connection) {
-				// Write to socket
-      	this.connection.write(data)
-      	this.connection.pipe(this.connection)
-			}
+      if (this.connection) {
+        // Write to socket
+        this.connection.write(data)
+        this.connection.pipe(this.connection)
+      }
     })
 
     this.sock.on('error', error => console.error(error))
 
-		this.sock.on('close', () => {	
-			// Websockets need to be re-opened after they close.
-			this.openSockChannel()
-		})
+    this.sock.on('close', () => {  
+      // Websockets need to be re-opened after they close.
+      this.openSockChannel()
+    })
   }
 
-	// Send data over socket
+  // Send data over socket
   send (query, connection) {
     this.connection = connection
 
-		this.sock.write(query)
-		this.sock.resume()
+    this.sock.write(query)
+    this.sock.resume()
   }
 }
 
